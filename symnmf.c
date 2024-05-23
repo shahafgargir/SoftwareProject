@@ -1,8 +1,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-int distance(int* first_vec, int* second_vec, int d){
-    int i, dif, sum;
+double distance(double* first_vec, double* second_vec, int d){
+    int i;
+    double dif, sum;
     sum = 0;
 
     for(i = 0; i < d; i++){
@@ -12,23 +13,29 @@ int distance(int* first_vec, int* second_vec, int d){
     return sum;
 }
 
+double **create_matrix(int n, int d){
+    double *data;
+    double **mat;
+    int i;
 
-int **similar_matrix(int** mat, int n, int d){
-    int *data;
-    int **A;
-    int i, j;
-    
-    data = (int*)calloc(n * d, sizeof(int));
+    data = (double*)calloc(n * d, sizeof(double));
     assert(data != NULL);
 
-    A = (int**)calloc(n, sizeof(int *));
-    assert(data!= NULL);
+    mat = (double**)calloc(n, sizeof(double *));
+    assert(mat != NULL);
 
     for(i = 0; i < n; i++){
-        A[i] = data + i * d;
+        mat[i] = data + i * d;
     }
+    return mat;
+}
+
+double **similar_matrix(double** mat, int n, int d){
+    double **A = create_matrix(n, n);
+    int i, j;
+
     for(i = 0; i < n; i++){
-        for(j = 0; j < d; j++){
+        for(j = 0; j < n; j++){
             if(i == j){
                 A[i][j] = 0;
             }
@@ -39,3 +46,48 @@ int **similar_matrix(int** mat, int n, int d){
     }
     return A;
 }
+
+double **diaognal_degree_matrix(double** A, int n, int d){
+    int i, j;
+    double **D = create_matrix(n, n);;
+
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            D[i][i] += A[i][j];
+        }
+    }
+    return D;
+}
+
+double **matrix_multiply(double** A, double** B, int n){
+    int i, j, k;
+
+    double **C = create_matrix(n, n);
+
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            C[i][j] = 0;
+            for(k = 0; k < n; k++){
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    return C;
+}
+
+double **normalized_similarity_matrix(double** A, double** D, int n){
+    int i, j;
+    double **D_half_inv = create_matrix(n, n);
+    double **W = create_matrix(n, n);
+
+    for(i = 0; i < n; i++){
+        D_half_inv[i][i] = 1.0 / sqrt(D[i][i]);
+    }
+
+    W = matrix_multiply(D_half_inv, A, n);
+    W = matrix_multiply(W, D_half_inv, n);
+
+    return W;
+}
+
+
