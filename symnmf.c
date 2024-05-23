@@ -1,38 +1,41 @@
 #include <math.h>
+#include <stdlib.h>
 
-
-int distance(int* first_vec, int* second_vec){
-    int n = sizeof(first_vec)/ sizeof(int);
+int distance(int* first_vec, int* second_vec, int d){
     int i, dif, sum;
     sum = 0;
-    for(i = 0; i < n; i++){
+
+    for(i = 0; i < d; i++){
         dif = first_vec[i] - second_vec[i];
-        sum += dif*dif;
+        sum += dif * dif;
     }
     return sum;
 }
 
 
 int **similar_matrix(int** mat, int n, int d){
-    int *p;
-    int **a;
+    int *data;
+    int **A;
     int i, j;
-    p = (int*)calloc(n*n, sizeof(int));
-    assert(p != NULL);
-    a = (int**)calloc(n, sizeof(int *));
-    assert(a!= NULL);
+    
+    data = (int*)calloc(n * d, sizeof(int));
+    assert(data != NULL);
+
+    A = (int**)calloc(n, sizeof(int *));
+    assert(data!= NULL);
+
     for(i = 0; i < n; i++){
-        a[i] = p + i*n;
+        A[i] = data + i * d;
     }
-    for(i = 0; i <n; i++){
-        for(j = 0; j < n; j++){
+    for(i = 0; i < n; i++){
+        for(j = 0; j < d; j++){
             if(i == j){
-                a[i][j] = 0;
+                A[i][j] = 0;
             }
             else{
-                a[i][j] = exp(-(distance(mat[i], mat[j]))/2);
+                A[i][j] = exp(-(distance(mat[i], mat[j], d)) / 2);
             }
         }
     }
-    return a;
+    return A;
 }
