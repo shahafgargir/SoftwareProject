@@ -13,6 +13,7 @@ def main():
         return
     k, goal, file_name = arg_lst[1], arg_lst[2], arg_lst[3]
     matrix, n = create_matrix_from_file(file_name)
+    print(f"n is {n}")
     ret_matrix = get_matrix(goal, matrix, k, n)
     print_matrix(ret_matrix)
 
@@ -33,8 +34,11 @@ def create_matrix_from_file(file):  # read text from file and create points matr
 
 def get_matrix(goal, matrix, k, n):
     if goal == "symnmf":
+        print("before W")
         W = get_matrix("norm", matrix, k, n)
+        print(f"after W: {W}")
         H = initialize_H(W, k)
+        print(f"after H: {W}")
         return mysymnmfsp.symnmf(W, H, k, n)
     elif goal == "sym":
         return mysymnmfsp.sym(matrix)

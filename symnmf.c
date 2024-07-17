@@ -251,7 +251,9 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
     data = create_data(W, n, n);
     return data;
 }
+
 struct data_struct norm(struct data_struct data){
+    printf("start norm");
     return normalized_similarity_matrix(data.data, data.length, data.dimention);
 }
 
@@ -356,11 +358,22 @@ struct data_struct symnmf(double** W, double** H, int k, int n){
     return data;
 }
 
+void free_data_struct(struct data_struct data){
+    /*
+     get data structure and free the 2 dimention array of the data in it.
+     */
+    int i;
+    
+    for (i = 0; i<data.length; i++){
+        free(data.data[i]);
+    }
+    free(data.data);
+}
+
 
 int main(int argc, char** argv){
     char* goal, *file_name;
     struct data_struct data, new_data;
-    double** mat;
     if(argc != 3){
         printf("An Error Has Occurred");
         exit(1);
@@ -383,8 +396,8 @@ int main(int argc, char** argv){
         printf("An Error Has Occurred");
         exit(1);
     }  
-    data.data = mat;
-    data.dimention = data.length;
-    print_data_struct(data);
+    print_data_struct(new_data);
+    free_data_struct(data);
+    free_data_struct(new_data);
     return 0;
 }

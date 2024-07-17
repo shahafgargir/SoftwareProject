@@ -22,7 +22,7 @@ void free_matrix(double** mat);
 struct data_struct similar_matrix(double** mat, int n, int d);
 
 struct data_struct sym(struct data_struct data);
-
+void free_data_struct(struct data_struct data);
 struct data_struct diaognal_degree_matrix(double** mat, int n, int d);
 struct data_struct ddg(struct data_struct data);
 double **matrix_multiply(double** A, double** B, int n1, int n2, int n3);
