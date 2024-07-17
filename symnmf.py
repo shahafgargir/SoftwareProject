@@ -10,7 +10,7 @@ def main():
         print("An Error Has Occurred")
         return
     k, goal, file_name = int(arg_lst[1]), arg_lst[2], arg_lst[3]
-    matrix, n = create_matrix_from_file(file_name)
+    matrix = create_matrix_from_file(file_name)
     ret_matrix = get_matrix(goal, matrix, k)
     print_matrix(ret_matrix)
 
@@ -18,7 +18,6 @@ def main():
 def create_matrix_from_file(file):  # read text from file and create points matrix
     with open(file, "r") as f:
         lines = f.readlines()
-    num_points = len(lines)
     points_list = []
     for line in lines:
         line = line.strip()
@@ -26,12 +25,12 @@ def create_matrix_from_file(file):  # read text from file and create points matr
             coordinates = list(map(float, line.split(',')))
             points_list.append(coordinates)
     points_matrix = np.array(points_list)
-    return points_matrix, num_points
+    return points_matrix
 
 
-def get_matrix(goal, matrix, k):
+def get_matrix(goal, matrix, k): # return the right matrix according to the goal
     if goal == "symnmf":
-        W = get_matrix("norm", matrix, k)
+        W = get_matrix("norm", matrix, k) # get norm matrix
         H = initialize_H(W, k)
         return np.array(mysymnmfsp.symnmf(W.tolist(), H.tolist(), k))
     elif goal == "sym":
@@ -42,13 +41,13 @@ def get_matrix(goal, matrix, k):
         return np.array(mysymnmfsp.norm(matrix.tolist()))
 
 
-def initialize_H(W, k):
+def initialize_H(W, k): #initialize H matrix
     n = W.shape[0]
     m = np.mean(W)
     upper_bound = 2 * np.sqrt(m / k)
     return np.random.uniform(0, upper_bound, (n, k))
 
-def print_matrix(matrix):
+def print_matrix(matrix): # print the matrix according to
     for row in matrix:
         print(','.join(['%.4f' % elem for elem in row]))
 
