@@ -78,12 +78,12 @@ struct data_struct parse_file(const char *file_path){
     
     input = fopen(file_path,"r");
     if (input == NULL){
-        printf("error while open file");
+        printf("An Error Has Occurred");
         exit(1);
     }
     dim = get_dim(input);
     if (dim == 0){
-        printf("intput file not format correctly.. make sure have , in the first line");
+        printf("An Error Has Occurred");
         exit(1);
     }
     
@@ -92,14 +92,14 @@ struct data_struct parse_file(const char *file_path){
             if (index == length){
                 data = (double **)realloc(data, length * 2 * sizeof(double *));
                 if(data == NULL){
-                    printf("Error in realloc external array");
+                    printf("An Error Has Occurred");
                     exit(1);
                 }
                 length *= 2;
             }
             data[index] = (double *)calloc(dim, sizeof(double));
             if(data[index] == NULL){
-                printf("Error in calloc new observation");
+                printf("An Error Has Occurred");
                 exit(1);
             }
         }
@@ -111,7 +111,7 @@ struct data_struct parse_file(const char *file_path){
         mod = (mod + 1) % dim;
         c = getc(input);
         if((c != '\n') & (c != ',') & (c != EOF)){
-            printf("error in file format");
+            printf("An Error Has Occurred");
             exit(1);
         }
     }
@@ -161,6 +161,7 @@ void free_matrix(double** mat){
 
 
 struct data_struct similar_matrix(double** mat, int n, int d){
+    
     double **A = create_matrix(n, n);
     int i, j;
     struct data_struct data;
@@ -176,6 +177,7 @@ struct data_struct similar_matrix(double** mat, int n, int d){
         }
     }
     data = create_data(A, n , n);
+    return data;
 }
 
 struct data_struct sym(struct data_struct data){
@@ -237,13 +239,16 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
     double** DA;
     double **A = similar_matrix(mat, n, d).data;
     double **D = diaognal_degree_matrix(mat, n, d).data;
+    /*printf("IN3");*/
     double **D_half_inv = create_matrix(n, n);
+    /*printf("IN4");*/
     double **W = create_matrix(n, n);
 
     for(i = 0; i < n; i++){
         D_half_inv[i][i] = 1.0 / sqrt(D[i][i]);
     }
     DA = matrix_multiply(D_half_inv, A, n, n, n);
+
     W = matrix_multiply(DA, D_half_inv, n, n, n);
     free_matrix(D_half_inv);
     free_matrix(DA);
@@ -253,7 +258,7 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
 }
 
 struct data_struct norm(struct data_struct data){
-    printf("start norm");
+    /*printf("start norm\n");*/
     return normalized_similarity_matrix(data.data, data.length, data.dimention);
 }
 
@@ -381,7 +386,7 @@ int main(int argc, char** argv){
     goal = argv[1];
     file_name = argv[2];
     data = parse_file(file_name);
-    printf("%d", data.length);
+    /*printf("%d", data.length);*/
     if (strcmp(goal,"sym") == 0){
         new_data = similar_matrix(data.data, data.length, data.dimention);
     }

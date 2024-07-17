@@ -10,14 +10,15 @@ struct data_struct array_2d_to_data_structure(PyObject *data_2d_array){
     int i, j;
     
     data.data = (double **)calloc(PyObject_Length(data_2d_array), sizeof(double *));
-    data.length = (int)PyObject_Length(data_2d_array);
-    data.dimention = (int)PyObject_Length(PyList_GetItem(data_2d_array,0));
+    data.length = PyObject_Length(data_2d_array);
+    data.dimention = PyObject_Length(PyList_GetItem(data_2d_array,0));
         
     /* initiate the clusters and set them to be the first k observations */
     for (i = 0; i < data.length; i++){
         data.data[i] = (double *)calloc(data.dimention, sizeof(double));
         for (j = 0; j < data.dimention; j++){
             data.data[i][j] = PyFloat_AsDouble(PyList_GetItem(PyList_GetItem(data_2d_array,i),j));
+            /*printf("arr to dat: %f\n", data.data[i][j]);*/
         }
     }
     return data;
@@ -32,15 +33,17 @@ PyObject *data_structure_to_array_2d(struct data_struct data){
     for (i = 0; i < data.length; i++){
         row = PyList_New(data.dimention);
         for (j = 0; j < data.dimention; j++){
+            /*printf("2d list: %f\n",  data.data[i][j]);*/
             PyList_SetItem(row, j, Py_BuildValue("d", data.data[i][j]));
         }
         PyList_SetItem(data_2d_array, i, row);
     }
+    /*printf("FFFFFFFFFFFFFFFFFF\n");*/
     return data_2d_array;
 }
 static PyObject* symnmf_api(PyObject *self, PyObject *args)
 {
-    int k, n;
+    int k;
     
     
     PyObject *W;
@@ -50,9 +53,7 @@ static PyObject* symnmf_api(PyObject *self, PyObject *args)
     struct data_struct H_struct;
     
     struct data_struct optimezed_H;
-    
-    int i,j;
-    
+        
     if(!PyArg_ParseTuple(args, "OOi", &W, &H, &k)) {
         return NULL;
     }
@@ -63,25 +64,24 @@ static PyObject* symnmf_api(PyObject *self, PyObject *args)
     optimezed_H = symnmf(W_struct.data,H_struct.data,k,W_struct.length);
 
     PyObject *H_py = data_structure_to_array_2d(optimezed_H);
-    
+
+    /*printf("die kvar\n");*/
     free_data_struct(W_struct);
-    free_data_struct(H_struct);
+    /*printf("die kvar2\n");*/
     free_data_struct(optimezed_H);
+    /*printf("die kvar4\n");*/
     
     return H_py;
 }
 static PyObject* sym_api(PyObject *self, PyObject *args)
 {
-    int k, n;
     
     PyObject *X;
     
     struct data_struct X_struct;
     
     struct data_struct sym_X;
-    
-    int i,j;
-    
+        
     if(!PyArg_ParseTuple(args, "O", &X)) {
         return NULL;
     }
@@ -97,16 +97,13 @@ static PyObject* sym_api(PyObject *self, PyObject *args)
 }
 static PyObject* ddg_api(PyObject *self, PyObject *args)
 {
-    int k, n;
     
     PyObject *X;
     
     struct data_struct X_struct;
     
     struct data_struct sym_X;
-    
-    int i,j;
-    
+        
     if(!PyArg_ParseTuple(args, "O", &X)) {
         return NULL;
     }
@@ -122,7 +119,6 @@ static PyObject* ddg_api(PyObject *self, PyObject *args)
 }
 static PyObject* norm_api(PyObject *self, PyObject *args)
 {
-    int k, n;
     
     PyObject *X;
     
@@ -130,15 +126,17 @@ static PyObject* norm_api(PyObject *self, PyObject *args)
     
     struct data_struct sym_X;
     
-    int i,j;
     
     if(!PyArg_ParseTuple(args, "O", &X)) {
         return NULL;
     }
     
     X_struct = array_2d_to_data_structure(X);
-    
+    /*printf("before_norm\n");*/
+
     sym_X = norm(X_struct);
+    /*printf("after_norm\n");*/
+
     
     /* Convert back from data_struct to python 2d array */
     PyObject *X_py = data_structure_to_array_2d(sym_X);
