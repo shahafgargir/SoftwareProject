@@ -1,5 +1,117 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+
+struct data_struct{
+    double **data;
+    int length;
+    int dimention;
+};
+
+
+int main(int argc, char** argv){
+    char* goal, file_name;
+    struct data_struct data;
+    if(argc != 3){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+    goal = argv[1];
+    file_name = argv[2];
+    data = parse_file(file_name)
+        
+}
+
+int get_dim(FILE *input){
+    /*
+     The function gets file structure, and by counting the nubmer of ',' in the first line return the dimention of the data.
+     */
+    
+    int dim = 0;
+    char c;
+    do {
+        c = getc(input);
+        if (c == ','){
+            dim++;
+        }
+    }while (c != '\n');
+    rewind(input);
+    if (dim == 0){
+        return 0;
+    }else{
+        return dim + 1;
+    }
+    
+}
+
+struct data_struct parse_file(const char *file_path){
+    /*
+     The function gets file path and return a structure of the data in it including the data, the length and the dimention of the observations
+     */
+
+    
+    FILE *input = NULL;
+    int dim;
+    
+    int mod = 0;
+    int index = 0;
+    double **data = (double **)calloc(1, sizeof(double *));
+    int length = 1;
+    double scaned_double;
+    
+    char c;
+    
+    struct data_struct return_data;
+    
+    input = fopen(file_path,"r");
+    if (input == NULL){
+        printf("error while open file");
+        exit(1);
+    }
+    dim = get_dim(input);
+    if (dim == 0){
+        printf("intput file not format correctly.. make sure have , in the first line");
+        exit(1);
+    }
+    
+    while(fscanf(input, "%lf", &scaned_double) == 1){
+        if (mod == 0){
+            if (index == length){
+                data = (double **)realloc(data, length * 2 * sizeof(double *));
+                if(data == NULL){
+                    printf("Error in realloc external array");
+                    exit(1);
+                }
+                length *= 2;
+            }
+            data[index] = (double *)calloc(dim, sizeof(double));
+            if(data[index] == NULL){
+                printf("Error in calloc new observation");
+                exit(1);
+            }
+        }
+        data[index][mod] = scaned_double;
+        
+        if(mod == dim - 1){
+            index++;
+        }
+        mod = (mod + 1) % dim;
+        c = getc(input);
+        if((c != '\n') & (c != ',') & (c != EOF)){
+            printf("error in file format");
+            exit(1);
+        }
+    }
+    fclose(input);
+    
+    return_data.data = data;
+    return_data.length = index;
+    return_data.dimention = dim;
+    
+    return return_data;
+}
+
 
 double distance(double* first_vec, double* second_vec, int d){
     int i;
@@ -182,14 +294,15 @@ double frobenius_norm(double** A, int n, int k){
     return sqrt(norm);
 }
 
-double **convergence(double** W, int n, int k, double epsilon){
-    double **H = initialize_H(W, n, k);
+double **symnmf(double** W, int k, double** H, int n){
     double **new_H = update_H(H, W, n, k);
     double **old_H = H;
+    int iter;
+    iter = 1;
 
     double **HMinusH = matrix_subtract(new_H, old_H, n, k);
 
-    while (forbenuis_norm(HMinusH, n, k) > epsilon){
+    while (forbenuis_norm(HMinusH, n, k) > pow(10, -4) && iter <= 300){
         free_matrix(old_H);
         old_H = new_H;
 
@@ -197,6 +310,7 @@ double **convergence(double** W, int n, int k, double epsilon){
 
         free_matrix(HMinusH);
         HMinusH = matrix_subtract(new_H, old_H, n, k);
+        iter += 1;
     }
     free_matrix(HMinusH);
     free_matrix(old_H);
