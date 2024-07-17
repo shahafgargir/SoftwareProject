@@ -14,19 +14,19 @@ def main():
     k, file_name = int(arg_lst[1]), arg_lst[2]
     points_lst = create_points_from_file(file_name)
     matrix = np.array(points_lst)
-    symnmf_matrix = symnmf.get_matrix("symnmf", matrix, k)
-    symnmf_labels = labels_by_symnmfmatrix(symnmf_matrix)
-    kmeans_center = kmeans.get_center(points_lst, k, 300)
-    kmeans_labels = labels_by_center(points_lst, kmeans_center)
-    kmeans_silhouette_score = silhouette_score(matrix, kmeans_labels)
-    symnmf_silhouette_score = silhouette_score(matrix, symnmf_labels)
+    symnmf_matrix = symnmf.get_matrix("symnmf", matrix, k) # gets symnmf matrix from symnmf.py  
+    symnmf_labels = labels_by_symnmfmatrix(symnmf_matrix) # classify points to centers according to symnmf matrix
+    kmeans_center = kmeans.get_center(points_lst, k, 300) # gets kmeans centers from kmeans.py
+    kmeans_labels = labels_by_center(points_lst, kmeans_center) # classify points to kmeans centers 
+    kmeans_silhouette_score = silhouette_score(matrix, kmeans_labels) # calculate kmeans score
+    symnmf_silhouette_score = silhouette_score(matrix, symnmf_labels) # calculate symnmf score
     print(f"nmf: {symnmf_silhouette_score:.4f}")
     print(f"kmeans: {kmeans_silhouette_score:.4f}")
 
 
-def labels_by_center(points_lst, center):
+def labels_by_center(points_lst, center): # find closest center for each point and put them in labels
     label = [0 for point in points_lst]
-    for i in range(len(points_lst)):  # find closest center for each point and put them in groups
+    for i in range(len(points_lst)):  
         j = kmeans.closest_index(points_lst[i], center)
         label[i] = j
     return np.array(label)
@@ -45,7 +45,7 @@ def create_points_from_file(file):  # read text from file and create points list
         return points_lst
 
 
-def labels_by_symnmfmatrix(matrix):
+def labels_by_symnmfmatrix(matrix): #classify each point to center according to the symnmf matrix
     labels = []
     for row_idx, row in enumerate(matrix):
         cluster = np.argmax(row)
