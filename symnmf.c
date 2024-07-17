@@ -37,11 +37,7 @@ int get_dim(FILE *input){
         }
     }while (c != '\n');
     rewind(input);
-    if (dim == 0){
-        return 0;
-    }else{
-        return dim + 1;
-    }
+    return dim + 1;
     
 }
 
@@ -213,6 +209,7 @@ struct data_struct diaognal_degree_matrix(double** mat, int n, int d){
             D[i][i] += A[i][j];
         }
     }
+    free_matrix(A);
     data = create_data(D, n, n);
     return data;
 }
@@ -268,17 +265,18 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
     double **A = similar_matrix(mat, n, d).data;
     double **D = diaognal_degree_matrix(mat, n, d).data;
     double **D_half_inv = create_matrix(n, n);
-    double **W = create_matrix(n, n);
+    double **W;
 
     for(i = 0; i < n; i++){
         D_half_inv[i][i] = 1.0 / sqrt(D[i][i]);
     }
     DA = matrix_multiply(D_half_inv, A, n, n, n);
-
     W = matrix_multiply(DA, D_half_inv, n, n, n);
+
     free_matrix(D_half_inv);
     free_matrix(DA);
-
+    free_matrix(A);
+    free_matrix(D);
     data = create_data(W, n, n);
     return data;
 }
