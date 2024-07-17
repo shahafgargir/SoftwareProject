@@ -31,17 +31,16 @@ def create_matrix_from_file(file):  # read text from file and create points list
 
 
 def get_matrix(goal, matrix, k):
-    match goal:
-        case "symnmf":
-            W = get_matrix("norm", matrix, k)
-            H = initialize_H(W, k)
-            return mysymnmfsp.symnmf(W, H, k)
-        case "sym":
-            return mysymnmfsp.sym(matrix)
-        case "ddg":
-            return mysymnmfsp.ddg(matrix)
-        case "norm":
-            return mysymnmfsp.norm(matrix)
+    if goal == "symnmf":
+        W = get_matrix("norm", matrix, k)
+        H = initialize_H(W, k)
+        return mysymnmfsp.symnmf(W, H, k)
+    elif goal == "sym":
+        return mysymnmfsp.sym(matrix)
+    elif goal == "ddg":
+        return mysymnmfsp.ddg(matrix)
+    elif goal == "norm":
+        return mysymnmfsp.norm(matrix)
 
 
 def distance(first_vec, second_vec):
