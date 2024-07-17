@@ -4,6 +4,7 @@
 # include <math.h>  
 #include "symnmf.h"
 
+
 struct data_struct array_2d_to_data_structure(PyObject *data_2d_array){
     struct data_struct data;
     int i, j;
@@ -52,14 +53,14 @@ static PyObject* symnmf_api(PyObject *self, PyObject *args)
     
     int i,j;
     
-    if(!PyArg_ParseTuple(args, "OOii", &W, &H, &k, &n)) {
+    if(!PyArg_ParseTuple(args, "OOi", &W, &H, &k)) {
         return NULL;
     }
     
     W_struct = array_2d_to_data_structure(W);
     H_struct = array_2d_to_data_structure(H);
 
-    optimezed_H = symnmf(W,H,k,n);
+    optimezed_H = symnmf(W.data,H.data,k,W.length);
 
     PyObject *H_py = data_structure_to_array_2d(optimezed_H);
     
@@ -73,53 +74,76 @@ static PyObject* sym_api(PyObject *self, PyObject *args)
 {
     int k, n;
     
-    PyObject *H;
+    PyObject *X;
     
-    struct data_struct H_struct;
+    struct data_struct X_struct;
     
-    struct data_struct optimezed_H;
+    struct data_struct sym_X;
     
     int i,j;
     
-    if(!PyArg_ParseTuple(args, "O", &H)) {
+    if(!PyArg_ParseTuple(args, "O", &X)) {
         return NULL;
     }
     
-    H_struct = array_2d_to_data_structure(H);
+    X_struct = array_2d_to_data_structure(X);
     
-    optimezed_H = sym(H);
+    sym_X = sym(X_struct);
     
     /* Convert back from data_struct to python 2d array */
-    PyObject *H_py = data_structure_to_array_2d(optimezed_H);
+    PyObject *X_py = data_structure_to_array_2d(sym_X);
     
-    return H_py;
+    return X_py;
 }
 static PyObject* ddg_api(PyObject *self, PyObject *args)
 {
     int k, n;
     
-    PyObject *H;
+    PyObject *X;
     
-    struct data_struct H_struct;
+    struct data_struct X_struct;
     
-    struct data_struct optimezed_H;
+    struct data_struct sym_X;
     
     int i,j;
     
-    if(!PyArg_ParseTuple(args, "O", &H)) {
+    if(!PyArg_ParseTuple(args, "O", &X)) {
         return NULL;
     }
     
-    H_struct = array_2d_to_data_structure(H);
+    X_struct = array_2d_to_data_structure(X);
     
-    optimezed_H = ddg(H);
+    sym_X = ddg(X_struct);
     
-    PyObject *H_py = data_structure_to_array_2d(optimezed_H);
+    /* Convert back from data_struct to python 2d array */
+    PyObject *X_py = data_structure_to_array_2d(sym_X);
     
-    free_data_struct(H_struct);
-    free_data_struct(optimezed_H);
+    return X_py;
+}
+static PyObject* norm_api(PyObject *self, PyObject *args)
+{
+    int k, n;
     
-    return H_py;
+    PyObject *X;
+    
+    struct data_struct X_struct;
+    
+    struct data_struct sym_X;
+    
+    int i,j;
+    
+    if(!PyArg_ParseTuple(args, "O", &X)) {
+        return NULL;
+    }
+    
+    X_struct = array_2d_to_data_structure(X);
+    
+    sym_X = norm(X_struct);
+    
+    /* Convert back from data_struct to python 2d array */
+    PyObject *X_py = data_structure_to_array_2d(sym_X);
+    
+    return X_py;
 }
 
 
@@ -134,6 +158,10 @@ static PyMethodDef capiMethods[] = {
       PyDoc_STR("")},
     {"ddg",
       (PyCFunction) ddg_api,
+      METH_VARARGS,
+      PyDoc_STR("")},
+    {"norm",
+      (PyCFunction) norm_api,
       METH_VARARGS,
       PyDoc_STR("")},
     
