@@ -151,6 +151,10 @@ void free_matrix(double** mat){
     free(mat);
 }
 
+double **sym(struct data_struct data){
+    return similar_matrix(data.data, data.length, data.dimention);
+}
+
 double **similar_matrix(double** mat, int n, int d){
     double **A = create_matrix(n, n);
     int i, j;
@@ -166,6 +170,10 @@ double **similar_matrix(double** mat, int n, int d){
         }
     }
     return A;
+}
+
+double **ddg(struct data_struct data){
+    return diaognal_degree_matrix(data.data, data.length, data.dimention);
 }
 
 double **diaognal_degree_matrix(double** mat, int n, int d){
@@ -206,6 +214,10 @@ double **matrix_subtract(double** A, double** B, int n, int d){
         }
     }
     return C;
+}
+
+double **norm(struct data_struct data){
+    return normalized_similarity_matrix(data.data, data.length, data.dimention);
 }
 
 double **normalized_similarity_matrix(double** mat, int n, int d){
@@ -301,7 +313,7 @@ double frobenius_norm(double** A, int n, int k){
     return sqrt(norm);
 }
 
-double **symnmf(double** W, int k, double** H, int n){
+double **symnmf(double** W, double** H, int k, int n){
     double **HMinusH;
     double **new_H = update_H(H, W, n, k);
     double **old_H = H;
