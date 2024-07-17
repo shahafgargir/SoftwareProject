@@ -53,6 +53,9 @@ int get_dim(FILE *input){
 }
 
 struct data_struct create_data(double **data, int length, int dimention){
+    /*
+     The function gets a 2 dimention array, the length of the array and the dimention of the observations and return a structure of the data in it.
+     */
     struct data_struct data_struct;
     data_struct.data = data;
     data_struct.length = length;
@@ -129,6 +132,9 @@ struct data_struct parse_file(const char *file_path){
 
 
 double distance(double* first_vec, double* second_vec, int d){
+    /*
+     The function gets 2 vectors and the dimention of them and return the euclidean distance between them.
+     */
     int i;
     double dif, sum;
     sum = 0;
@@ -141,6 +147,9 @@ double distance(double* first_vec, double* second_vec, int d){
 }
 
 double **create_matrix(int n, int d){
+    /*
+     The function gets number of rows and dimention and return a 2 dimention array of the data.
+     */
     double *data;
     double **mat;
     int i;
@@ -158,12 +167,18 @@ double **create_matrix(int n, int d){
 }
 
 void free_matrix(double** mat){
+    /*
+     The function gets a 2 dimention array and free the memory of it.
+     */
     free(mat[0]);
     free(mat);
 }
 
 
 struct data_struct similar_matrix(double** mat, int n, int d){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return a similar matrix of the data.
+     */
     
     double **A = create_matrix(n, n);
     int i, j;
@@ -184,11 +199,17 @@ struct data_struct similar_matrix(double** mat, int n, int d){
 }
 
 struct data_struct sym(struct data_struct data){
+    /*
+     The function gets a data structure and return a similar matrix of the data in it.
+     */
     return similar_matrix(data.data, data.length, data.dimention);
 }
 
 
 struct data_struct diaognal_degree_matrix(double** mat, int n, int d){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return a diaognal degree matrix of the data.
+     */
     int i, j;
     double **A = similar_matrix(mat, n ,d).data;
     double **D = create_matrix(n, n);
@@ -205,10 +226,16 @@ struct data_struct diaognal_degree_matrix(double** mat, int n, int d){
 
 
 struct data_struct ddg(struct data_struct data){
+    /*
+     The function gets a data structure and return a diaognal degree matrix of the data in it.
+     */
     return diaognal_degree_matrix(data.data, data.length, data.dimention);
 }
 
 double **matrix_multiply(double** A, double** B, int n1, int n2, int n3){
+    /*
+     The function gets 2 2 dimention arrays and the dimention of them and return the multiplication of them.
+     */
     int i, j, k;
 
     double **C = create_matrix(n1, n3);
@@ -224,6 +251,9 @@ double **matrix_multiply(double** A, double** B, int n1, int n2, int n3){
     return C;
 }
 double **matrix_subtract(double** A, double** B, int n, int d){
+    /*
+     The function gets 2 2 dimention arrays and the dimention of them and return the subtraction of them.
+     */
     int i, j;
     double **C = create_matrix(n, d);
 
@@ -236,6 +266,9 @@ double **matrix_subtract(double** A, double** B, int n, int d){
 }
 
 struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return a normalized similarity matrix of the data.
+     */
     struct data_struct data; 
     int i;
     double** DA;
@@ -258,10 +291,16 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
 }
 
 struct data_struct norm(struct data_struct data){
+    /*
+     The function gets a data structure and return a normalized similarity matrix of the data in it.
+     */
     return normalized_similarity_matrix(data.data, data.length, data.dimention);
 }
 
 double average_matrix(double** mat, int n, int d){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return the average of the data.
+     */
     int i, j;
     double sum = 0;
 
@@ -273,20 +312,11 @@ double average_matrix(double** mat, int n, int d){
     return sum / (n * d);
 }
 
-double **initialize_H(double** W, int n, int k){
-    double **H = create_matrix(n, k);
-    int i, j;
-    double m = average_matrix(W, n, k);
 
-
-    for(i = 0; i < n; i++){
-        for(j = 0; j < k; j++){
-            H[i][j] = (double)(rand() % 2 * sqrt(m / k));
-        }
-    }
-    return H;
-}
 double **transpose_matrix(double** mat, int n, int d){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return the transpose of the data.
+     */
     int i, j;
     double **transposed = create_matrix(d, n);
 
@@ -300,8 +330,10 @@ double **transpose_matrix(double** mat, int n, int d){
 }
 
 double **update_H(double** H, double **W, int n, int k){
+    /*
+     The function gets 2 2 dimention arrays and the length and dimention of them and return the updated H.
+     */
     int i, j;
-    /*double mul = 0;*/
     double **new_H = create_matrix(n, k);
     double beta = 0.5;
 
@@ -324,6 +356,9 @@ double **update_H(double** H, double **W, int n, int k){
 }
 
 double frobenius_norm(double** A, int n, int k){
+    /*
+     The function gets a 2 dimention array and the length and dimention of the data and return the frobenius norm of the data.
+     */
     int i, j;
     double norm = 0;
 
@@ -336,6 +371,9 @@ double frobenius_norm(double** A, int n, int k){
 }
 
 struct data_struct symnmf(double** W, double** H, int k, int n){
+    /*
+     The function gets 2 2 dimention arrays, the length of the data and the dimention of the data and return full symnmf of the data.
+     */
     double **HMinusH;
     struct data_struct data;
     double **new_H = update_H(H, W, n, k);
@@ -384,6 +422,7 @@ int main(int argc, char** argv){
     }
     goal = argv[1];
     file_name = argv[2];
+    
     data = parse_file(file_name);
     if (strcmp(goal,"sym") == 0){
         new_data = similar_matrix(data.data, data.length, data.dimention);
@@ -391,7 +430,6 @@ int main(int argc, char** argv){
     else if(strcmp(goal,"ddg") == 0){
         new_data = diaognal_degree_matrix(data.data, data.length, data.dimention);
     }
-
     else if(strcmp(goal,"norm") == 0){
         new_data = normalized_similarity_matrix(data.data, data.length, data.dimention);
         }
