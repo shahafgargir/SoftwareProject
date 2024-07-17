@@ -12,29 +12,30 @@ def main():
         print("An Error Has Occurred")
         return
     k, goal, file_name = arg_lst[1], arg_lst[2], arg_lst[3]
-    matrix = create_matrix_from_file(file_name)
-    ret_matrix = get_matrix(goal, matrix, k)
+    matrix, n = create_matrix_from_file(file_name)
+    ret_matrix = get_matrix(goal, matrix, k, n)
     print_matrix(ret_matrix)
 
 
-def create_matrix_from_file(file):  # read text from file and create points list
-    text = open(file, "r")
-    text = text.read()
-    points_lst = text.split("\n")
-    points_lst = points_lst[:-1]
-    for i in range(len(points_lst)):
-        points_lst[i] = points_lst[i].split(',')
-        for j in range(len(points_lst[i])):
-            points_lst[i][j] = float(points_lst[i][j])
-        points_lst[i] = tuple(points_lst[i])
-    return np.array(points_lst)
+def create_matrix_from_file(file):  # read text from file and create points matrix
+    with open(file, "r") as f:
+        lines = f.readlines()
+    num_points = len(lines)
+    points_list = []
+    for line in lines:
+        line = line.strip()
+        if line:
+            coordinates = list(map(float, line.split(',')))
+            points_list.append(coordinates)
+    points_matrix = np.array(points_list)
+    return points_matrix, num_points
 
 
-def get_matrix(goal, matrix, k):
+def get_matrix(goal, matrix, k, n):
     if goal == "symnmf":
-        W = get_matrix("norm", matrix, k)
+        W = get_matrix("norm", matrix, k, n)
         H = initialize_H(W, k)
-        return mysymnmfsp.symnmf(W, H, k)
+        return mysymnmfsp.symnmf(W, H, k, n)
     elif goal == "sym":
         return mysymnmfsp.sym(matrix)
     elif goal == "ddg":
