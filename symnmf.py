@@ -32,13 +32,13 @@ def get_matrix(goal, matrix, k): # return the right matrix according to the goal
     if goal == "symnmf":
         W = get_matrix("norm", matrix, k) # get norm matrix
         H = initialize_H(W, k)
-        return np.array(mysymnmfsp.symnmf(W.tolist(), H.tolist(), k))
+        return np.array(symnmfsp.symnmf(W.tolist(), H.tolist(), k))
     elif goal == "sym":
-        return np.array(mysymnmfsp.sym(matrix.tolist()))
+        return np.array(symnmfsp.sym(matrix.tolist()))
     elif goal == "ddg":
-        return np.array(mysymnmfsp.ddg(matrix.tolist()))
+        return np.array(symnmfsp.ddg(matrix.tolist()))
     elif goal == "norm":
-        return np.array(mysymnmfsp.norm(matrix.tolist()))
+        return np.array(symnmfsp.norm(matrix.tolist()))
 
 
 def initialize_H(W, k): #initialize H matrix

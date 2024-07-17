@@ -161,14 +161,14 @@ static PyMethodDef capiMethods[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "mysymnmfsp",
+    "symnmfsp",
     NULL,
     -1,
     capiMethods
 };
 
 PyMODINIT_FUNC
-PyInit_mysymnmfsp(void)
+PyInit_symnmfsp(void)
 {
     PyObject *m;
     m = PyModule_Create(&moduledef);

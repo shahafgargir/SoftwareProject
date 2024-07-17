@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 
 struct data_struct{
     double **data;

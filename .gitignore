@@ -3,3 +3,5 @@ build/*
 tester/*
 *.pyc
 *.txt
+symnmf
+*.so

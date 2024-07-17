@@ -1,17 +1,10 @@
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
+#include "symnmf.h"
 
-
-
-struct data_struct{
-    double **data;
-    int length;
-    int dimention;
-};
 
 void print_data_struct(struct data_struct data){
     /*
