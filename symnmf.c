@@ -21,7 +21,10 @@ void print_data_struct(struct data_struct data){
     
     for (i = 0; i < data.length; i++){
         for (j = 0; j < data.dimention; j++){
-            printf("%.4f ", data.data[i][j]);
+            printf("%.4f", data.data[i][j]);
+            if(j != data.dimention - 1){
+                printf(",");
+            }
         }
         printf("\n");
     }
@@ -346,7 +349,7 @@ struct data_struct symnmf(double** W, double** H, int k, int n){
 
     HMinusH = matrix_subtract(new_H, old_H, n, k);
 
-    while (frobenius_norm(HMinusH, n, k) > pow(10, -4) && iter <= 300){
+    while (pow(frobenius_norm(HMinusH, n, k),2) > pow(10, -4) && iter <= 300){
         free_matrix(old_H);
         old_H = new_H;
 
@@ -403,6 +406,6 @@ int main(int argc, char** argv){
     }  
     print_data_struct(new_data);
     free_data_struct(data);
-    free_data_struct(new_data);
+    free_matrix(new_data.data);
     return 0;
 }
