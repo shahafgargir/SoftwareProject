@@ -49,6 +49,14 @@ int get_dim(FILE *input){
     
 }
 
+struct data_struct create_data(double **data, int length, int dimention){
+    struct data_struct data_struct;
+    data_struct.data = data;
+    data_struct.length = length;
+    data_struct.dimention = dimention;
+    return data_struct;
+}
+
 struct data_struct parse_file(const char *file_path){
     /*
      The function gets file path and return a structure of the data in it including the data, the length and the dimention of the observations
@@ -151,13 +159,11 @@ void free_matrix(double** mat){
     free(mat);
 }
 
-double **sym(struct data_struct data){
-    return similar_matrix(data.data, data.length, data.dimention);
-}
 
-double **similar_matrix(double** mat, int n, int d){
+struct data_struct similar_matrix(double** mat, int n, int d){
     double **A = create_matrix(n, n);
     int i, j;
+    struct data_struct data;
 
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
@@ -169,24 +175,32 @@ double **similar_matrix(double** mat, int n, int d){
             }
         }
     }
-    return A;
+    data = create_data(A, n , n);
 }
 
-double **ddg(struct data_struct data){
-    return diaognal_degree_matrix(data.data, data.length, data.dimention);
+struct data_struct sym(struct data_struct data){
+    return similar_matrix(data.data, data.length, data.dimention);
 }
 
-double **diaognal_degree_matrix(double** mat, int n, int d){
+
+struct data_struct diaognal_degree_matrix(double** mat, int n, int d){
     int i, j;
-    double **A = similar_matrix(mat, n ,d);
-    double **D = create_matrix(n, n);;
+    double **A = similar_matrix(mat, n ,d).data;
+    double **D = create_matrix(n, n);
+    struct data_struct data;
 
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
             D[i][i] += A[i][j];
         }
     }
-    return D;
+    data = create_data(D, n, n);
+    return data;
+}
+
+
+struct data_struct ddg(struct data_struct data){
+    return diaognal_degree_matrix(data.data, data.length, data.dimention);
 }
 
 double **matrix_multiply(double** A, double** B, int n1, int n2, int n3){
@@ -216,16 +230,13 @@ double **matrix_subtract(double** A, double** B, int n, int d){
     return C;
 }
 
-double **norm(struct data_struct data){
-    return normalized_similarity_matrix(data.data, data.length, data.dimention);
-}
-
-double **normalized_similarity_matrix(double** mat, int n, int d){
-    /*int j*/   
+struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
+    /*int j*/ 
+    struct data_struct data; 
     int i;
     double** DA;
-    double **A = similar_matrix(mat, n, d);
-    double **D = diaognal_degree_matrix(mat, n, d);
+    double **A = similar_matrix(mat, n, d).data;
+    double **D = diaognal_degree_matrix(mat, n, d).data;
     double **D_half_inv = create_matrix(n, n);
     double **W = create_matrix(n, n);
 
@@ -237,8 +248,13 @@ double **normalized_similarity_matrix(double** mat, int n, int d){
     free_matrix(D_half_inv);
     free_matrix(DA);
 
-    return W;
+    data = create_data(W, n, n);
+    return data;
 }
+struct data_struct norm(struct data_struct data){
+    return normalized_similarity_matrix(data.data, data.length, data.dimention);
+}
+
 double average_matrix(double** mat, int n, int d){
     int i, j;
     double sum = 0;
@@ -313,8 +329,9 @@ double frobenius_norm(double** A, int n, int k){
     return sqrt(norm);
 }
 
-double **symnmf(double** W, double** H, int k, int n){
+struct data_struct symnmf(double** W, double** H, int k, int n){
     double **HMinusH;
+    struct data_struct data;
     double **new_H = update_H(H, W, n, k);
     double **old_H = H;
     int iter;
@@ -335,13 +352,14 @@ double **symnmf(double** W, double** H, int k, int n){
     free_matrix(HMinusH);
     free_matrix(old_H);
 
-    return new_H;
+    data = create_data(new_H, n, k);
+    return data;
 }
 
 
 int main(int argc, char** argv){
     char* goal, *file_name;
-    struct data_struct data;
+    struct data_struct data, new_data;
     double** mat;
     if(argc != 3){
         printf("An Error Has Occurred");
@@ -350,15 +368,16 @@ int main(int argc, char** argv){
     goal = argv[1];
     file_name = argv[2];
     data = parse_file(file_name);
+    printf("%d", data.length);
     if (strcmp(goal,"sym") == 0){
-        mat = similar_matrix(data.data, data.length, data.dimention);
+        new_data = similar_matrix(data.data, data.length, data.dimention);
     }
     else if(strcmp(goal,"ddg") == 0){
-        mat = diaognal_degree_matrix(data.data, data.length, data.dimention);
+        new_data = diaognal_degree_matrix(data.data, data.length, data.dimention);
     }
 
     else if(strcmp(goal,"norm") == 0){
-        mat = normalized_similarity_matrix(data.data, data.length, data.dimention);
+        new_data = normalized_similarity_matrix(data.data, data.length, data.dimention);
         }
     else{
         printf("An Error Has Occurred");

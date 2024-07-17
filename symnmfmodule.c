@@ -9,8 +9,8 @@ struct data_struct array_2d_to_data_structure(PyObject *data_2d_array){
     int i, j;
     
     data.data = (double **)calloc(PyObject_Length(data_2d_array), sizeof(double *));
-    data.length = PyObject_Length(data_2d_array);
-    data.dimention = PyObject_Length(PyList_GetItem(data_2d_array,0));
+    data.length = (int)PyObject_Length(data_2d_array);
+    data.dimention = (int)PyObject_Length(PyList_GetItem(data_2d_array,0));
         
     /* initiate the clusters and set them to be the first k observations */
     for (i = 0; i < data.length; i++){
