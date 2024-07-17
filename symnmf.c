@@ -236,15 +236,12 @@ double **matrix_subtract(double** A, double** B, int n, int d){
 }
 
 struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
-    /*int j*/ 
     struct data_struct data; 
     int i;
     double** DA;
     double **A = similar_matrix(mat, n, d).data;
     double **D = diaognal_degree_matrix(mat, n, d).data;
-    /*printf("IN3");*/
     double **D_half_inv = create_matrix(n, n);
-    /*printf("IN4");*/
     double **W = create_matrix(n, n);
 
     for(i = 0; i < n; i++){
@@ -261,7 +258,6 @@ struct data_struct normalized_similarity_matrix(double** mat, int n, int d){
 }
 
 struct data_struct norm(struct data_struct data){
-    /*printf("start norm\n");*/
     return normalized_similarity_matrix(data.data, data.length, data.dimention);
 }
 
@@ -389,7 +385,6 @@ int main(int argc, char** argv){
     goal = argv[1];
     file_name = argv[2];
     data = parse_file(file_name);
-    /*printf("%d", data.length);*/
     if (strcmp(goal,"sym") == 0){
         new_data = similar_matrix(data.data, data.length, data.dimention);
     }
