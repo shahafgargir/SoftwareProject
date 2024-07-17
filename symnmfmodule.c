@@ -68,7 +68,7 @@ static PyObject* symnmf_api(PyObject *self, PyObject *args)
     /*printf("die kvar\n");*/
     free_data_struct(W_struct);
     /*printf("die kvar2\n");*/
-    free_data_struct(optimezed_H);
+    free_matrix(optimezed_H.data);
     /*printf("die kvar4\n");*/
     
     return H_py;
