@@ -60,7 +60,7 @@ static PyObject* symnmf_api(PyObject *self, PyObject *args)
     W_struct = array_2d_to_data_structure(W);
     H_struct = array_2d_to_data_structure(H);
 
-    optimezed_H = symnmf(W.data,H.data,k,W.length);
+    optimezed_H = symnmf(W_struct.data,H_struct.data,k,W_struct.length);
 
     PyObject *H_py = data_structure_to_array_2d(optimezed_H);
     
